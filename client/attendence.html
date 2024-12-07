@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        .attendance-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .attendance-summary {
+            margin-top: 20px;
+        }
+
+        /* Circular percentage container */
+        .percentage-circle {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(
+                green 0% 0%, 
+                #e0e0e0 0% 100%
+            );
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .percentage-circle span {
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="attendance-container">
+        <h1>Attendance System</h1>
+
+        <!-- Add Student Form -->
+        <div class="form-group">
+            <label for="studentName">Enter Student Name:</label>
+            <input type="text" id="studentName" placeholder="Enter student name">
+        </div>
+        <button class="btn" onclick="addStudent()">Add Student</button>
+
+        <!-- Attendance Form -->
+        <form id="attendanceForm">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Present</th>
+                        <th>Absent</th>
+                        <th>Percentage (%)</th>
+                    </tr>
+                </thead>
+                <tbody id="studentList"></tbody>
+            </table>
+        </form>
+
+        <!-- Attendance Summary -->
+        <div class="attendance-summary">
+            <!-- <p>Total Present: <span id="totalPresent">0</span></p>
+            <p>Total Absent: <span id="totalAbsent">0</span></p> -->
+        </div>
+    </div>
+
+    <script>
+        let studentCount = 0;
+        let totalPresent = 0;
+        let totalAbsent = 0;
+
+        const students = [
+            { name: 'John', percentage: getRandomPercentage() },
+            { name: 'Sarah', percentage: getRandomPercentage() },
+            { name: 'Tom', percentage: getRandomPercentage() },
+            { name: 'Emma', percentage: getRandomPercentage() },
+            { name: 'Alex', percentage: getRandomPercentage() }
+        ];
+
+        window.onload = function () {
+            // Add 5 default students
+            students.forEach(student => {
+                addStudentToList(student.name, student.percentage);
+            });
+        };
+
+        function getRandomPercentage() {
+            return Math.floor(Math.random() * 101); // Random value between 0 and 100
+        }
+
+        function addStudent() {
+            const studentNameInput = document.getElementById('studentName');
+            const studentName = studentNameInput.value.trim();
+            const percentage = getRandomPercentage();
+
+            if (studentName === '') {
+                alert('Please enter a valid student name.');
+                return;
+            }
+
+            addStudentToList(studentName, percentage);
+            studentNameInput.value = ''; // Clear the input field
+        }
+
+        function addStudentToList(studentName, percentage) {
+            const studentList = document.getElementById('studentList');
+            studentCount++;
+
+            // Create a new row for the student with radio buttons and percentage circle
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${studentName}</td>
+                <td><input type="radio" name="student${studentCount}" value="Present" onclick="updateAttendance(true, ${studentCount}, ${percentage})"></td>
+                <td><input type="radio" name="student${studentCount}" value="Absent" onclick="updateAttendance(false, ${studentCount})"></td>
+                <td>
+                    <div class="percentage-circle" id="percentage${studentCount}">
+                        <span>${percentage}%</span>
+                    </div>
+                </td>
+            `;
+
+            studentList.appendChild(row);
+
+            // Apply initial color fill based on percentage
+            updateCircleColor(studentCount, percentage);
+        }
+
+        function updateAttendance(isPresent, studentId) {
+            const totalPresentElement = document.getElementById('totalPresent');
+            const totalAbsentElement = document.getElementById('totalAbsent');
+            const percentageElement = document.getElementById(`percentage${studentId}`);
+            let currentPercentage = parseInt(percentageElement.innerText);
+
+            if (isPresent) {
+                // Update percentage by adding 5 if marked present
+                currentPercentage = Math.min(currentPercentage + 5, 100); // Cap at 100%
+                totalPresent++;
+                totalAbsent = Math.max(0, totalAbsent - 1); // Adjust absent count
+            } else {
+                totalAbsent++;
+                totalPresent = Math.max(0, totalPresent - 1); // Adjust present count
+            }
+
+            percentageElement.innerHTML = `<span>${currentPercentage}%</span>`;
+            updateCircleColor(studentId, currentPercentage);
+
+            // Update the counts in the DOM
+            totalPresentElement.textContent = totalPresent;
+            totalAbsentElement.textContent = totalAbsent;
+        }
+
+        function updateCircleColor(studentId, percentage) {
+            const circle = document.getElementById(`percentage${studentId}`);
+            circle.style.background = `conic-gradient(green 0% ${percentage}%, #e0e0e0 ${percentage}% 100%)`;
+        }
+    </script>
+
+</body>
+</html>

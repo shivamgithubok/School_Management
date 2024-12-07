@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login_page</title>
+</head>
+<style>
+    body{
+        background: url('login_picture.avif') no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .container{
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 20px;
+        border-radius: 5px;
+        color: white;
+        width: 25%;
+    }
+
+    .container h1{
+        text-align: center;
+    }
+
+    .container form{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .container form label{  
+        margin-top: 10px;
+    }
+
+    .container form input{
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+    }
+
+    .container form input[type="submit"]{
+        margin-top: 20px;   
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+    }
+</style>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        <form action = "/Php_file/form2.php" method = "post">
+            <!-- <label for="username">Username:</label> -->
+            <input type="text" id="username" name="username" placeholder="Username"><br><br>
+            <!-- <label for="password">Password:</label> -->
+            <input type="password" id="password" name="password" placeholder="Password"><br><br>
+            <div>
+                <p><a href="#">forget password</a></p>
+            </div>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+</body>
+</html>
